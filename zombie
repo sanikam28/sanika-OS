@@ -1,0 +1,62 @@
+import os
+import time
+import random
+
+# Sorting function for demonstration
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+
+def main():
+    # Accept integers to be sorted from the user
+    user_input = input("Enter integers to be sorted, separated by spaces: ")
+    numbers = list(map(int, user_input.split()))
+
+    # Fork a new process
+    pid = os.fork()
+
+    if pid > 0:
+        # Parent process
+        print(f"Parent process (PID: {os.getpid()}) sorting numbers...")
+
+        # Sort using bubble sort
+        bubble_sort(numbers)
+        print(f"Parent sorted numbers: {numbers}")
+
+        # Wait for child process to complete
+        child_pid, status = os.wait()
+        print(f"Parent process: Child process {child_pid} finished with status {status}")
+
+        # Simulate zombie state
+        print("Simulating zombie state... (child process will become a zombie)")
+        time.sleep(5)
+        print("Parent process ends.")
+    
+    elif pid == 0:
+        # Child process
+        print(f"Child process (PID: {os.getpid()}) sorting numbers...")
+        time.sleep(2)  # Simulate some processing time
+
+        # Shuffle numbers for demonstration
+        random.shuffle(numbers)
+        print(f"Child shuffled numbers: {numbers}")
+
+        # Orphan state simulation: Child sleeps longer than parent
+        print("Simulating orphan state... (child will continue after parent exits)")
+        time.sleep(10)
+        print("Child process ends.")
+    
+    else:
+        # Fork failed
+        print("Fork failed to create a new process.")
+
+if _name_ == "_main_":
+    main()
+
+
+OUTPUT:
+
+ 
