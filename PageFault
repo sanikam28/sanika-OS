@@ -1,0 +1,125 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <set>
+
+using namespace std;
+
+// Function to calculate page faults using FIFO algorithm
+int fifoPageFaults(const vector<int>& referenceString, int numFrames) {
+    queue<int> q; // To store the current pages in memory (FIFO order)
+    set<int> pages; // To check if a page is already in memory
+    int pageFaults = 0;
+
+    for (int page : referenceString) {
+        // If the page is not in memory
+        if (pages.find(page) == pages.end()) {
+            // If memory is full, remove the oldest page (FIFO)
+            if (q.size() == numFrames) {
+                int oldPage = q.front();
+                q.pop();
+                pages.erase(oldPage);
+            }
+            // Add the new page to memory
+            q.push(page);
+            pages.insert(page);
+            pageFaults++;
+        }
+    }
+
+    return pageFaults;
+}
+
+// Function to calculate page faults using LRU algorithm
+int lruPageFaults(const vector<int>& referenceString, int numFrames) {
+    unordered_map<int, int> pageMap; // To store pages and their last access times
+    int pageFaults = 0;
+
+    for (int i = 0; i < referenceString.size(); i++) {
+        int page = referenceString[i];
+        // If the page is not in memory
+        if (pageMap.find(page) == pageMap.end()) {
+            if (pageMap.size() == numFrames) {
+                // Find the least recently used page
+                int lruTime = i, lruPage;
+                for (auto& p : pageMap) {
+                    if (p.second < lruTime) {
+                        lruTime = p.second;
+                        lruPage = p.first;
+                    }
+                }
+                // Remove the least recently used page
+                pageMap.erase(lruPage);
+            }
+            pageFaults++;
+        }
+        // Update the last access time of the page
+        pageMap[page] = i;
+    }
+
+    return pageFaults;
+}
+
+// Function to calculate page faults using Optimal algorithm
+int optimalPageFaults(const vector<int>& referenceString, int numFrames) {
+    set<int> pages; // To store pages currently in memory
+    int pageFaults = 0;
+
+    for (int i = 0; i < referenceString.size(); i++) {
+        int page = referenceString[i];
+        // If the page is not in memory
+        if (pages.find(page) == pages.end()) {
+            if (pages.size() == numFrames) {
+                // Find the page to replace (the one not used for the longest time)
+                int farthest = i, pageToReplace;
+                bool found = false;
+
+                for (int p : pages) {
+                    int j;
+                    for (j = i + 1; j < referenceString.size(); j++) {
+                        if (referenceString[j] == p) break;
+                    }
+                    if (j == referenceString.size()) {
+                        pageToReplace = p;
+                        found = true;
+                        break;
+                    }
+                    if (j > farthest) {
+                        farthest = j;
+                        pageToReplace = p;
+                    }
+                }
+                pages.erase(pageToReplace);
+            }
+            pages.insert(page);
+            pageFaults++;
+        }
+    }
+
+    return pageFaults;
+}
+
+int main() {
+    int numFrames;
+    cout << "Enter the number of frames: ";
+    cin >> numFrames;
+
+    int n;
+    cout << "Enter the number of pages in the reference string: ";
+    cin >> n;
+
+    vector<int> referenceString(n);
+    cout << "Enter the reference string: ";
+    for (int i = 0; i < n; i++) {
+        cin >> referenceString[i];
+    }
+
+    // Calculate and display the number of page faults for each algorithm
+    cout << "FIFO Page Faults: " << fifoPageFaults(referenceString, numFrames) << endl;
+    cout << "LRU Page Faults: " << lruPageFaults(referenceString, numFrames) << endl;
+    cout << "Optimal Page Faults: " << optimalPageFaults(referenceString, numFrames) << endl;
+
+    return 0;
+}
+
