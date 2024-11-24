@@ -1,0 +1,108 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+struct Contact {
+    string name;
+    string phone;
+    string email;
+};
+
+vector<Contact> addressBook;
+
+void createAddressBook() {
+    addressBook.clear();
+    cout << "Address book created!" << endl;
+}
+
+void viewAddressBook() {
+    if (addressBook.empty()) {
+        cout << "Address book is empty!" << endl;
+        return;
+    }
+    for (size_t i = 0; i < addressBook.size(); ++i) {
+        cout << i + 1 << ". Name: " << addressBook[i].name
+             << ", Phone: " << addressBook[i].phone
+             << ", Email: " << addressBook[i].email << endl;
+    }
+}
+
+void insertRecord() {
+    Contact newContact;
+    cout << "Enter name: ";
+    cin >> newContact.name;
+    cout << "Enter phone: ";
+    cin >> newContact.phone;
+    cout << "Enter email: ";
+    cin >> newContact.email;
+    addressBook.push_back(newContact);
+    cout << "Record inserted!" << endl;
+}
+
+void deleteRecord() {
+    int index;
+    cout << "Enter record number to delete: ";
+    cin >> index;
+    if (index > 0 && index <= addressBook.size()) {
+        addressBook.erase(addressBook.begin() + index - 1);
+        cout << "Record deleted!" << endl;
+    } else {
+        cout << "Invalid record number!" << endl;
+    }
+}
+
+void modifyRecord() {
+    int index;
+    cout << "Enter record number to modify: ";
+    cin >> index;
+    if (index > 0 && index <= addressBook.size()) {
+        cout << "Enter new name: ";
+        cin >> addressBook[index - 1].name;
+        cout << "Enter new phone: ";
+        cin >> addressBook[index - 1].phone;
+        cout << "Enter new email: ";
+        cin >> addressBook[index - 1].email;
+        cout << "Record modified!" << endl;
+    } else {
+        cout << "Invalid record number!" << endl;
+    }
+}
+
+int main() {
+    int choice;
+    while (true) {
+        cout << "\nAddress Book Menu\n";
+        cout << "1. Create address book\n";
+        cout << "2. View address book\n";
+        cout << "3. Insert a record\n";
+        cout << "4. Delete a record\n";
+        cout << "5. Modify a record\n";
+        cout << "6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                createAddressBook();
+                break;
+            case 2:
+                viewAddressBook();
+                break;
+            case 3:
+                insertRecord();
+                break;
+            case 4:
+                deleteRecord();
+                break;
+            case 5:
+                modifyRecord();
+                break;
+            case 6:
+                cout << "Exiting..." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+    }
+}
